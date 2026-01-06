@@ -63,7 +63,7 @@ class QuizApp(App):
 if __name__ == "__main__":
     # Khi chạy trên desktop, đặt kích thước cửa sổ giống tỉ lệ mobile (dọc)
     try:
-        Window.size = (600, 600)
+        Window.size = (800, 800)
     except Exception:
         pass
 
