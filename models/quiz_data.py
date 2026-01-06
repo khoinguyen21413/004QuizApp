@@ -22,7 +22,7 @@ QUIZ_QUESTIONS = [
             "<class 'set'>",
             "<class 'list'>",
         ],
-        "answer_index": 2,
+        "answer_index": 3,
     },
     {
         "question": "Từ khóa nào được sử dụng để bắt đầu định nghĩa một hàm trong Python?",

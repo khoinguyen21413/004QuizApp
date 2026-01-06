@@ -1,13 +1,13 @@
 # import dữ liệu
-from quiz_data import QUIZ_QUESTIONS
+from models.quiz_data import QUIZ_QUESTIONS
 
 
 class QuizModel:
-    def __init__(self, total_question=5):
+    def __init__(self, total_questions=5):
         # Chua toan bo thong tin cau hoi
         self.all_question = QUIZ_QUESTIONS[:]
         # Tong so cau hoi
-        self.total_question = min(total_question, len(self.all_question))
+        self.total_question = min(total_questions, len(self.all_question))
         # Index cau hoi hien tai
         self.current_index = 0
         # So diem
@@ -42,6 +42,15 @@ class QuizModel:
     # chuyển câu tiếp
     def next_question(self):
         self.current_index += 1
+
+    def get_summary(self):
+        """Trả về (score, total).
+
+        score: số câu đúng
+        total: tổng số câu trong bài
+        """
+        total = len(self.get_active_questions())
+        return self.score, total
 
 
 # Test don gian

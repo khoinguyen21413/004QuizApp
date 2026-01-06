@@ -1,6 +1,8 @@
 from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.metrics import dp
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.graphics import Color, Rectangle
 
 PRIMARY_COLOR = (0.2, 0.6, 1, 1)  # màu xanh dương
 BACKGROUND_COLOR = (0.95, 0.95, 0.95, 1)  # màu xám nhạt
@@ -30,12 +32,36 @@ CORRECT_COLOR = (0.23, 0.70, 0.44, 1)
 WRONG_COLOR = (0.86, 0.30, 0.30, 1)
 
 
+def make_card_layout(orientation: str = "vertical") -> BoxLayout:
+    """Tạo một BoxLayout dạng "card" với nền tối nhẹ.
+
+    Dùng để chứa nội dung chính của mỗi màn hình.
+    """
+
+    layout = BoxLayout(orientation=orientation, padding=dp(18), spacing=dp(12))
+
+    with layout.canvas.before:
+        Color(*CARD_COLOR)
+        rect = Rectangle(size=layout.size, pos=layout.pos)
+
+    def _update_rect(instance, _value):
+        rect.size = instance.size
+        rect.pos = instance.pos
+
+    layout.bind(size=_update_rect, pos=_update_rect)
+    return layout
+
+
 def make_title(text):
-    return Label(text=text, font_size="28p", bold=True, size_hint_y=None, height=dp(50))
+    return Label(
+        text=text, font_size="28sp", bold=True, size_hint_y=None, height=dp(50)
+    )
 
 
 def make_subtitle(text):
-    return Label(text=text, font_size="24p", bold=True, size_hint_y=None, height=dp(50))
+    return Label(
+        text=text, font_size="24sp", bold=True, size_hint_y=None, height=dp(50)
+    )
 
 
 def make_primary_button(text, on_press):

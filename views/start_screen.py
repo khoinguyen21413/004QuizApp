@@ -13,13 +13,17 @@ class StartScreen(Screen):
         layout.add_widget(make_title("Quiz App"))
         layout.add_widget(make_subtitle("Phiên bản 1.0"))
         layout.add_widget(make_subtitle("Chọn đáp đúng cho mỗi câu hỏi"))
-        layout.add_widget(Label)  # spacer giữa
+        layout.add_widget(Label())  # spacer giữa
 
         layout.add_widget(make_primary_button("BẮT ĐẦU", self.on_start_pressed))
 
         layout.add_widget(Label())
         self.add_widget(layout)  # spacer dưới
 
-    def on_start_pressed(btn):
-        app = App.get_running_app
+    def on_start_pressed(self, *_):
+        app = App.get_running_app()
         app.start_quiz()
+
+    def _update_bg(self, *_):
+        self._bg_rect.size = self.size
+        self._bg_rect.pos = self.pos

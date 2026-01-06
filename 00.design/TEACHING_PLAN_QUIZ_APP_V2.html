@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown: Rich Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        // Initialize highlight.js
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+
+        // Copy to clipboard function
+        function copyToClipboard(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.backgroundColor = '#4CAF50';
+                button.style.color = 'white';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = '';
+                    button.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+    <style>
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+        /* Twemoji emoji image style for inline, text-sized emojis */
+        img.emoji {
+            height: 1em;
+            width: 1em;
+            margin: 0 .05em 0 .1em;
+            vertical-align: -0.1em;
+            display: inline;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            line-height: 1.25;
+        }
+        
+        h1 { 
+            font-size: 2em; 
+            border-bottom: 1px solid #eaecef; 
+            padding-bottom: 0.3em;
+            margin-top: 0.67em 0;
+        }
+        
+        h2 { 
+            font-size: 1.5em; 
+            border-bottom: 1px solid #eaecef; 
+            padding-bottom: 0.3em;
+            margin-top: 1.5em;
+        }
+        
+        h3 { 
+            font-size: 1.25em; 
+            margin-top: 1.25em;
+        }
+        
+        h4 { 
+            font-size: 1em; 
+            margin-top: 1em;
+        }
+        
+        a { 
+            color: #0366d6; 
+            text-decoration: none; 
+        }
+        
+        a:hover { 
+            text-decoration: underline; 
+        }
+        
+        strong { 
+            font-weight: 600; 
+        }
+        
+        pre {
+            background-color:rgb(9, 7, 10);
+            overflow: auto;
+            margin: 0;
+        }
+        
+        code {
+            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+            padding: 0.2em 0.4em;
+            font-size: 90%;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .code-block {
+            position: relative;
+            background-color:rgb(9, 7, 10);
+            border-radius: 6px;
+            margin: 1em 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 10px;
+            background-color:rgb(32, 30, 43);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .language {
+            color: #efe9e9;
+            font-size: 0.9em;
+            font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        .copy-button {
+            padding: 4px 8px;
+            font-size: 0.9em;
+            color: #efe9e9;
+            background-color: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #e9e9e9;
+            border-color: #ccc;
+        }
+        
+        blockquote {
+            margin: 0;
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid #dfe2e5;
+        }
+        
+        ul, ol {
+            padding-left: 2em;
+        }
+        
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            overflow: auto;
+            margin-bottom: 16px;
+        }
+        
+        table th {
+            font-weight: 600;
+        }
+        
+        table th, table td {
+            padding: 6px 13px;
+            border: 1px solid #dfe2e5;
+        }
+        
+        table tr {
+            background-color: #fff;
+            border-top: 1px solid #c6cbd1;
+        }
+        
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        
+        img {
+            max-width: 100%;
+            box-sizing: content-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kế hoạch học tập: Xây dựng Quiz App bằng Kivy</h1>
+<p>Tài liệu này dành cho học sinh THCS, giúp các em từng bước tự xây dựng ứng dụng Quiz App (trắc nghiệm) bằng Python + Kivy theo mô hình MVC.</p>
+<hr>
+<h2>1. Tổng quan (Overview)</h2>
+<p><strong>Mục tiêu cuối cùng</strong>: Học sinh tạo được một ứng dụng Quiz App đơn giản với 3 màn hình:</p>
+<ul>
+<li>Màn hình bắt đầu (Start)</li>
+<li>Màn hình làm bài (Quiz)</li>
+<li>Màn hình kết quả (Result)</li>
+</ul>
+<p>Ứng dụng chia theo mô hình <strong>MVC</strong>:</p>
+<ul>
+<li><strong>Model</strong>: dữ liệu câu hỏi + tính điểm</li>
+<li><strong>View</strong>: giao diện Kivy (các Screen)</li>
+<li><strong>Controller</strong>: điều khiển luồng làm bài, nối Model và View</li>
+</ul>
+<p><strong>Kiến thức nền tảng cần có trước</strong>:</p>
+<ul>
+<li>Biết chạy file Python (<code>python main.py</code>)</li>
+<li>Biết kiểu dữ liệu cơ bản: <code>int</code>, <code>str</code>, <code>list</code>, <code>dict</code></li>
+<li>Biết dùng <code>if</code>, <code>for</code>, hàm (<code>def ...</code>)</li>
+</ul>
+<hr>
+<h2>2. Sơ đồ thư mục mục tiêu</h2>
+<p>Học sinh sẽ dần dần tạo được cấu trúc thư mục như sau:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">text</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-text">main.py
+models/
+    quiz_data.py
+    quiz_model.py
+views/
+    widgets.py
+    start_screen.py
+    quiz_screen.py
+    result_screen.py
+controllers/
+    quiz_controller.py</code></pre>
+                </div>
+            <hr>
+<h2>3. Các task nhỏ cho học sinh</h2>
+<h3>Task 1: Chuẩn bị môi trường Kivy</h3>
+<p><strong>Mục tiêu</strong>: Chạy được một cửa sổ Kivy đơn giản.</p>
+<ul>
+<li>Viết file <code>hello_kivy.py</code> hiển thị một Label đơn giản.</li>
+<li>Chạy thử và kiểm tra có cửa sổ hiện ra.</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>from kivy.app import App</code></li>
+<li><code>from kivy.uix.label import Label</code></li>
+<li>Lớp <code>App</code>, hàm <code>build</code>, <code>App().run()</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Nếu chưa cài Kivy, chạy: <code>pip install kivy</code></li>
+<li>Cửa sổ Kivy mặc định có kích thước 800x600 pixels</li>
+<li>Nếu gặp lỗi, thử chạy lại hoặc kiểm tra phiên bản Python (nên dùng 3.8+)</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file mới tên <code>hello_kivy.py</code></p>
+</li>
+<li><p>Import thư viện cần thiết:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.app <span class="hljs-keyword">import</span> App
+<span class="hljs-keyword">from</span> kivy.uix.label <span class="hljs-keyword">import</span> Label</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class kế thừa từ <code>App</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloApp</span>(<span class="hljs-title class_ inherited__">App</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">build</span>(<span class="hljs-params">self</span>):
+        <span class="hljs-keyword">return</span> Label(text=<span class="hljs-string">&quot;Hello Kivy!&quot;</span>)</code></pre>
+                </div>
+            </li>
+<li><p>Thêm dòng chạy ứng dụng:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    HelloApp().run()</code></pre>
+                </div>
+            </li>
+<li><p>Chạy thử: <code>python hello_kivy.py</code></p>
+</li>
+<li><p>Kiểm tra: Cửa sổ có hiện chữ &quot;Hello Kivy!&quot; không?</p>
+</li>
+</ol>
+<hr>
+<h3>Task 2: Hiểu mô hình MVC ở cấp độ đơn giản</h3>
+<p><strong>Mục tiêu</strong>: Học sinh hiểu 3 phần chính của ứng dụng:</p>
+<ul>
+<li>Model = dữ liệu + tính toán điểm</li>
+<li>View = giao diện (màn hình, nút bấm, label)</li>
+<li>Controller = điều khiển (khi bấm nút thì làm gì)</li>
+</ul>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Vẽ sơ đồ đơn giản (trên giấy hoặc trong vở):<ul>
+<li>View → App → Controller → Model → Controller → View</li>
+</ul>
+</li>
+<li>Ghi chú 1–2 ví dụ: &quot;khi bấm đáp án A thì chuyện gì xảy ra?&quot;</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li>Khái niệm <strong>Model – View – Controller</strong></li>
+<li>Hàm được gọi khi bấm nút: <code>on_press</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li><strong>Model</strong> giống như &quot;bộ não&quot; - lưu trữ và xử lý dữ liệu</li>
+<li><strong>View</strong> giống như &quot;khuôn mặt&quot; - cái mà người dùng nhìn thấy</li>
+<li><strong>Controller</strong> giống như &quot;bộ phận điều khiển&quot; - kết nối giữa não và mặt</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li>Vẽ sơ đồ với 3 hộp: Model, View, Controller</li>
+<li>Vẽ mũi tên kết nối:<ul>
+<li>View → Controller (người dùng bấm nút)</li>
+<li>Controller → Model (hỏi câu trả lời đúng không?)</li>
+<li>Model → Controller (trả lời: đúng hoặc sai)</li>
+<li>Controller → View (cập nhật màu nút, điểm số)</li>
+</ul>
+</li>
+<li>Viết ví dụ cụ thể:<ul>
+<li>&quot;Khi bấm đáp án A → Controller kiểm tra → Model tính điểm → View hiện kết quả&quot;</li>
+</ul>
+</li>
+<li>Thảo luận: Tại sao phải tách ra 3 phần thay vì viết tất cả trong 1 file?</li>
+</ol>
+<hr>
+<h3>Task 3: Tạo dữ liệu câu hỏi (Model – phần 1)</h3>
+<p><strong>Mục tiêu</strong>: Tạo được danh sách câu hỏi dạng <code>list</code> chứa <code>dict</code>.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li><p>Tạo thư mục <code>models/</code>.</p>
+</li>
+<li><p>Tạo file <code>models/quiz_data.py</code>.</p>
+</li>
+<li><p>Tạo biến <code>QUIZ_QUESTIONS</code> là <strong>list</strong> các câu hỏi, mỗi câu hỏi là <strong>dict</strong> có dạng:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">{
+    <span class="hljs-string">&quot;question&quot;</span>: <span class="hljs-string">&quot;Câu hỏi gì đó?&quot;</span>,
+    <span class="hljs-string">&quot;choices&quot;</span>: [<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>, <span class="hljs-string">&quot;D&quot;</span>],
+    <span class="hljs-string">&quot;answer_index&quot;</span>: <span class="hljs-number">0</span>,  <span class="hljs-comment"># vị trí đáp án đúng</span>
+}</code></pre>
+                </div>
+            </li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>list</code> và <code>dict</code> trong Python</li>
+<li>Truy cập <code>dict[&quot;key&quot;]</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Bắt đầu với 5-10 câu hỏi đơn giản về môn học yêu thích</li>
+<li><code>answer_index</code> bắt đầu từ 0 (0=A, 1=B, 2=C, 3=D)</li>
+<li>Có thể copy cấu trúc dict đầu tiên và sửa nội dung cho nhanh</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo thư mục <code>models</code> trong thư mục dự án</p>
+</li>
+<li><p>Tạo file <code>models/quiz_data.py</code></p>
+</li>
+<li><p>Thêm comment mô tả:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-comment"># models/quiz_data.py</span>
+<span class="hljs-comment"># Chứa danh sách câu hỏi cho quiz</span></code></pre>
+                </div>
+            </li>
+<li><p>Tạo list bắt đầu:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">QUIZ_QUESTIONS = [</code></pre>
+                </div>
+            </li>
+<li><p>Thêm câu hỏi đầu tiên (ví dụ):</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">{
+    <span class="hljs-string">&quot;question&quot;</span>: <span class="hljs-string">&quot;Thủ đô của Việt Nam là?&quot;</span>,
+    <span class="hljs-string">&quot;choices&quot;</span>: [<span class="hljs-string">&quot;Hà Nội&quot;</span>, <span class="hljs-string">&quot;Huế&quot;</span>, <span class="hljs-string">&quot;Đà Nẵng&quot;</span>, <span class="hljs-string">&quot;TP.HCM&quot;</span>],
+    <span class="hljs-string">&quot;answer_index&quot;</span>: <span class="hljs-number">0</span>,
+},</code></pre>
+                </div>
+            </li>
+<li><p>Thêm 4-9 câu hỏi khác (có thể về Toán, Tin, Địa lý...)</p>
+</li>
+<li><p>Đóng list: <code>]</code></p>
+</li>
+<li><p>Test: Mở Python console và chạy:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> models.quiz_data <span class="hljs-keyword">import</span> QUIZ_QUESTIONS
+<span class="hljs-built_in">print</span>(QUIZ_QUESTIONS[<span class="hljs-number">0</span>])  <span class="hljs-comment"># In câu hỏi đầu tiên</span></code></pre>
+                </div>
+            </li>
+</ol>
+<hr>
+<h3>Task 4: Xây dựng QuizModel (Model – phần 2)</h3>
+<p><strong>Mục tiêu</strong>: Biết lưu trạng thái bài quiz (câu hiện tại, điểm) và kiểm tra đáp án.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo file <code>models/quiz_model.py</code>.</li>
+<li>Viết lớp <code>QuizModel</code> với các thuộc tính:<ul>
+<li><code>self.all_questions</code> – danh sách câu hỏi lấy từ <code>QUIZ_QUESTIONS</code></li>
+<li><code>self.total_questions</code> – số câu cho học sinh làm (ví dụ 5)</li>
+<li><code>self.current_index</code> – chỉ số câu hiện tại</li>
+<li><code>self.score</code> – số câu đúng</li>
+</ul>
+</li>
+<li>Thêm các hàm đơn giản:<ul>
+<li><code>reset()</code> – đặt lại <code>current_index</code> về 0, <code>score</code> về 0</li>
+<li><code>get_active_questions()</code> – trả về N câu hỏi đầu</li>
+<li><code>get_current_question()</code> – trả về câu hỏi hiện tại</li>
+<li><code>check_answer(choice_index)</code> – kiểm tra đúng/sai, tăng điểm nếu đúng</li>
+<li><code>next_question()</code> – tăng <code>current_index</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li>Lớp (<code>class</code>), hàm khởi tạo <code>__init__</code></li>
+<li>Thuộc tính đối tượng <code>self.xxx</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li><code>current_index</code> bắt đầu từ 0, tương ứng với câu hỏi đầu tiên trong list</li>
+<li>Hàm <code>check_answer</code> cần so sánh <code>choice_index</code> với <code>answer_index</code> của câu hỏi</li>
+<li>Dùng <code>self.all_questions[:]</code> để copy list, tránh thay đổi dữ liệu gốc</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file <code>models/quiz_model.py</code></p>
+</li>
+<li><p>Import dữ liệu:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> .quiz_data <span class="hljs-keyword">import</span> QUIZ_QUESTIONS</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class và hàm <code>__init__</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QuizModel</span>:
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, total_questions=<span class="hljs-number">5</span></span>):
+        <span class="hljs-variable language_">self</span>.all_questions = QUIZ_QUESTIONS[:]
+        <span class="hljs-variable language_">self</span>.total_questions = <span class="hljs-built_in">min</span>(total_questions, <span class="hljs-built_in">len</span>(<span class="hljs-variable language_">self</span>.all_questions))
+        <span class="hljs-variable language_">self</span>.current_index = <span class="hljs-number">0</span>
+        <span class="hljs-variable language_">self</span>.score = <span class="hljs-number">0</span></code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>reset()</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">reset</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.current_index = <span class="hljs-number">0</span>
+    <span class="hljs-variable language_">self</span>.score = <span class="hljs-number">0</span></code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>get_active_questions()</code> - lấy N câu đầu:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_active_questions</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.all_questions[:<span class="hljs-variable language_">self</span>.total_questions]</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>get_current_question()</code> - lấy câu hiện tại:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_current_question</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.current_index &gt;= <span class="hljs-built_in">len</span>(<span class="hljs-variable language_">self</span>.get_active_questions()):
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.get_active_questions()[<span class="hljs-variable language_">self</span>.current_index]</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>check_answer(choice_index)</code> - kiểm tra và tính điểm:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_answer</span>(<span class="hljs-params">self, choice_index</span>):
+    question = <span class="hljs-variable language_">self</span>.get_current_question()
+    <span class="hljs-keyword">if</span> question <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span>
+    correct = (choice_index == question[<span class="hljs-string">&quot;answer_index&quot;</span>])
+    <span class="hljs-keyword">if</span> correct:
+        <span class="hljs-variable language_">self</span>.score += <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> correct</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>next_question()</code> - chuyển câu tiếp:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">next_question</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.current_index += <span class="hljs-number">1</span></code></pre>
+                </div>
+            </li>
+<li><p>Test đơn giản:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    model = QuizModel()
+    <span class="hljs-built_in">print</span>(model.get_current_question())
+    <span class="hljs-built_in">print</span>(model.check_answer(<span class="hljs-number">0</span>))  <span class="hljs-comment"># Test đáp án đầu tiên</span></code></pre>
+                </div>
+            </li>
+</ol>
+<hr>
+<h3>Task 5: Tạo các widget cơ bản (View – phần 1)</h3>
+<p><strong>Mục tiêu</strong>: Tạo các hàm helper để làm giao diện gọn và thống nhất.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo thư mục <code>views/</code>.</li>
+<li>Tạo file <code>views/widgets.py</code>.</li>
+<li>Viết các hàm:<ul>
+<li><code>make_title(text)</code> – trả về Label tiêu đề</li>
+<li><code>make_subtitle(text)</code> – trả về Label mô tả/hướng dẫn</li>
+<li><code>make_primary_button(text, on_press)</code> – trả về Button chính</li>
+<li><code>make_answer_button(prefix)</code> – trả về Button đáp án</li>
+</ul>
+</li>
+<li>Sau đó dùng thử trong một file nhỏ để thấy kết quả.</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>Label</code>, <code>Button</code> trong Kivy</li>
+<li>Tham số <code>on_press</code> và <code>btn.bind(on_press=...)</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Dùng <code>font_size</code> để điều chỉnh kích thước chữ (vd: &quot;24sp&quot;, &quot;16sp&quot;)</li>
+<li>Màu sắc trong Kivy dùng định dạng RGBA với giá trị 0-1: <code>(0.2, 0.6, 1, 1)</code></li>
+<li><code>size_hint</code> giúp widget tự điều chỉnh kích thước theo màn hình</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo thư mục <code>views</code></p>
+</li>
+<li><p>Tạo file <code>views/widgets.py</code></p>
+</li>
+<li><p>Import thư viện:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.uix.button <span class="hljs-keyword">import</span> Button
+<span class="hljs-keyword">from</span> kivy.uix.label <span class="hljs-keyword">import</span> Label
+<span class="hljs-keyword">from</span> kivy.metrics <span class="hljs-keyword">import</span> dp</code></pre>
+                </div>
+            </li>
+<li><p>Định nghĩa các màu (có thể thay đổi tùy ý):</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">PRIMARY_COLOR = (<span class="hljs-number">0.2</span>, <span class="hljs-number">0.6</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Màu xanh dương</span>
+BACKGROUND_COLOR = (<span class="hljs-number">0.95</span>, <span class="hljs-number">0.95</span>, <span class="hljs-number">0.95</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Màu xám nhạt</span></code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>make_title(text)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_title</span>(<span class="hljs-params">text</span>):
+    <span class="hljs-keyword">return</span> Label(
+        text=text,
+        font_size=<span class="hljs-string">&quot;28sp&quot;</span>,
+        bold=<span class="hljs-literal">True</span>,
+        size_hint_y=<span class="hljs-literal">None</span>,
+        height=dp(<span class="hljs-number">50</span>)
+    )</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>make_subtitle(text)</code> (tương tự nhưng font nhỏ hơn)</p>
+</li>
+<li><p>Viết hàm <code>make_primary_button(text, on_press)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_primary_button</span>(<span class="hljs-params">text, on_press</span>):
+    btn = Button(
+        text=text,
+        size_hint=(<span class="hljs-number">0.6</span>, <span class="hljs-literal">None</span>),
+        height=dp(<span class="hljs-number">50</span>),
+        background_color=PRIMARY_COLOR
+    )
+    btn.bind(on_press=on_press)
+    <span class="hljs-keyword">return</span> btn</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>make_answer_button(prefix)</code> (Button cho đáp án A/B/C/D)</p>
+</li>
+<li><p>Test trong file riêng hoặc thử import vào <code>hello_kivy.py</code> để xem kết quả</p>
+</li>
+</ol>
+<hr>
+<h3>Task 6: Xây dựng StartScreen (View – phần 2)</h3>
+<p><strong>Mục tiêu</strong>: Tạo màn hình bắt đầu với tên app, hướng dẫn và nút &quot;BẮT ĐẦU&quot;.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo file <code>views/start_screen.py</code>.</li>
+<li>Tạo lớp <code>StartScreen(Screen)</code>.</li>
+<li>Dùng <code>BoxLayout</code> dọc, thêm:<ul>
+<li>Tiêu đề app (dùng <code>make_title</code>)</li>
+<li>Label mô tả ngắn (phiên bản, ghi chú)</li>
+<li>Hướng dẫn (dùng <code>make_subtitle</code>)</li>
+<li>Nút &quot;BẮT ĐẦU&quot; → gọi <code>app.start_quiz()</code> khi bấm.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>Screen</code>, <code>BoxLayout</code></li>
+<li><code>App.get_running_app()</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li><code>BoxLayout(orientation=&quot;vertical&quot;)</code> sắp xếp các widget từ trên xuống dưới</li>
+<li>Dùng <code>Label()</code> trống để tạo khoảng trắng (spacer)</li>
+<li><code>App.get_running_app()</code> giúp gọi hàm từ class chính</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file <code>views/start_screen.py</code></p>
+</li>
+<li><p>Import các thư viện cần thiết:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.app <span class="hljs-keyword">import</span> App
+<span class="hljs-keyword">from</span> kivy.uix.screenmanager <span class="hljs-keyword">import</span> Screen
+<span class="hljs-keyword">from</span> kivy.uix.boxlayout <span class="hljs-keyword">import</span> BoxLayout
+<span class="hljs-keyword">from</span> kivy.uix.label <span class="hljs-keyword">import</span> Label
+<span class="hljs-keyword">from</span> .widgets <span class="hljs-keyword">import</span> make_title, make_subtitle, make_primary_button</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class <code>StartScreen(Screen)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">StartScreen</span>(<span class="hljs-title class_ inherited__">Screen</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, **kwargs</span>):
+        <span class="hljs-built_in">super</span>().__init__(**kwargs)</code></pre>
+                </div>
+            </li>
+<li><p>Tạo layout chính:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">layout = BoxLayout(orientation=<span class="hljs-string">&quot;vertical&quot;</span>, padding=<span class="hljs-number">20</span>, spacing=<span class="hljs-number">15</span>)</code></pre>
+                </div>
+            </li>
+<li><p>Thêm các widget theo thứ tự:</p>
+<ul>
+<li><code>layout.add_widget(Label())</code> # spacer trên</li>
+<li><code>layout.add_widget(make_title(&quot;QUIZ APP&quot;))</code></li>
+<li><code>layout.add_widget(make_subtitle(&quot;Phiên bản 1.0&quot;))</code></li>
+<li><code>layout.add_widget(make_subtitle(&quot;Chọn đáp án đúng cho mỗi câu hỏi&quot;))</code></li>
+<li><code>layout.add_widget(Label())</code> # spacer giữa</li>
+</ul>
+</li>
+<li><p>Định nghĩa hàm xử lý nút:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_start_pressed</span>(<span class="hljs-params">btn</span>):
+    app = App.get_running_app()
+    app.start_quiz()</code></pre>
+                </div>
+            </li>
+<li><p>Thêm nút bắt đầu:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">layout.add_widget(make_primary_button(<span class="hljs-string">&quot;BẮT ĐẦU&quot;</span>, on_start_pressed))</code></pre>
+                </div>
+            </li>
+<li><p>Thêm spacer dưới và gắn layout:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">layout.add_widget(Label())
+<span class="hljs-variable language_">self</span>.add_widget(layout)</code></pre>
+                </div>
+            </li>
+</ol>
+<hr>
+<h3>Task 7: Xây dựng QuizScreen (View – phần 3)</h3>
+<p><strong>Mục tiêu</strong>: Tạo màn hình câu hỏi với 4 đáp án, hiện số câu và điểm hiện tại.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo file <code>views/quiz_screen.py</code>.</li>
+<li>Tạo lớp <code>QuizScreen(Screen)</code>.</li>
+<li>Bên trong:<ul>
+<li>Label trên cùng: &quot;Câu X/Y    Điểm: Z&quot;</li>
+<li>Label hiển thị nội dung câu hỏi</li>
+<li>4 Button đáp án A/B/C/D (dùng <code>make_answer_button</code>)</li>
+<li>Label nhỏ đưa feedback (Đúng / Sai)</li>
+<li>Nút &quot;CÂU TIẾP&quot;</li>
+</ul>
+</li>
+<li>Khi học sinh chọn đáp án:<ul>
+<li>Gọi <code>app.check_answer(choice_index)</code></li>
+<li>Hiện feedback đúng/sai</li>
+<li>Cho phép bấm &quot;CÂU TIẾP&quot; để sang câu tiếp theo.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>GridLayout</code> (hiển thị danh sách đáp án theo cột)</li>
+<li>Event <code>on_press</code> cho từng nút đáp án</li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Dùng <code>self.selected = False</code> để theo dõi xem đã chọn đáp án chưa</li>
+<li><code>GridLayout(cols=1)</code> tạo lưới 1 cột, các button xếp dọc</li>
+<li>Vô hiệu hóa các nút sau khi chọn bằng <code>btn.disabled = True</code></li>
+<li>Dùng màu xanh cho đúng, màu đỏ cho sai</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file <code>views/quiz_screen.py</code></p>
+</li>
+<li><p>Import:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.app <span class="hljs-keyword">import</span> App
+<span class="hljs-keyword">from</span> kivy.uix.screenmanager <span class="hljs-keyword">import</span> Screen
+<span class="hljs-keyword">from</span> kivy.uix.boxlayout <span class="hljs-keyword">import</span> BoxLayout
+<span class="hljs-keyword">from</span> kivy.uix.gridlayout <span class="hljs-keyword">import</span> GridLayout
+<span class="hljs-keyword">from</span> kivy.uix.label <span class="hljs-keyword">import</span> Label
+<span class="hljs-keyword">from</span> .widgets <span class="hljs-keyword">import</span> make_primary_button, make_answer_button</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class với biến theo dõi:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QuizScreen</span>(<span class="hljs-title class_ inherited__">Screen</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, **kwargs</span>):
+        <span class="hljs-built_in">super</span>().__init__(**kwargs)
+        <span class="hljs-variable language_">self</span>.selected = <span class="hljs-literal">False</span></code></pre>
+                </div>
+            </li>
+<li><p>Tạo layout chính và các label:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">layout = BoxLayout(orientation=<span class="hljs-string">&quot;vertical&quot;</span>, padding=<span class="hljs-number">20</span>, spacing=<span class="hljs-number">10</span>)
+<span class="hljs-variable language_">self</span>.top_info = Label(text=<span class="hljs-string">&quot;Câu 1/5    Điểm: 0&quot;</span>, size_hint_y=<span class="hljs-literal">None</span>, height=<span class="hljs-number">30</span>)
+<span class="hljs-variable language_">self</span>.question_label = Label(text=<span class="hljs-string">&quot;Câu hỏi sẽ hiện ở đây&quot;</span>, font_size=<span class="hljs-string">&quot;18sp&quot;</span>)</code></pre>
+                </div>
+            </li>
+<li><p>Tạo lưới đáp án với 4 nút:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-variable language_">self</span>.answers_grid = GridLayout(cols=<span class="hljs-number">1</span>, spacing=<span class="hljs-number">10</span>, size_hint_y=<span class="hljs-literal">None</span>)
+<span class="hljs-variable language_">self</span>.answer_buttons = []
+<span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):
+    btn = make_answer_button([<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>, <span class="hljs-string">&quot;D&quot;</span>][i])
+    btn.bind(on_press=<span class="hljs-variable language_">self</span>.make_answer_handler(i))
+    <span class="hljs-variable language_">self</span>.answer_buttons.append(btn)
+    <span class="hljs-variable language_">self</span>.answers_grid.add_widget(btn)</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm xử lý khi chọn đáp án:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_answer_handler</span>(<span class="hljs-params">self, choice_index</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">handler</span>(<span class="hljs-params">btn</span>):
+        <span class="hljs-keyword">if</span> <span class="hljs-variable language_">self</span>.selected:
+            <span class="hljs-keyword">return</span>
+        <span class="hljs-variable language_">self</span>.selected = <span class="hljs-literal">True</span>
+        app = App.get_running_app()
+        is_correct = app.check_answer(choice_index)
+        <span class="hljs-keyword">if</span> is_correct:
+            <span class="hljs-variable language_">self</span>.feedback_label.text = <span class="hljs-string">&quot;✅ Đúng rồi!&quot;</span>
+            btn.background_color = (<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Xanh lá</span>
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-variable language_">self</span>.feedback_label.text = <span class="hljs-string">&quot;❌ Sai rồi!&quot;</span>
+            btn.background_color = (<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Đỏ</span>
+        <span class="hljs-variable language_">self</span>.next_btn.disabled = <span class="hljs-literal">False</span>
+    <span class="hljs-keyword">return</span> handler</code></pre>
+                </div>
+            </li>
+<li><p>Thêm label feedback và nút &quot;CÂU TIẾP&quot;</p>
+</li>
+<li><p>Viết hàm <code>show_question(question_data, q_index, total, score)</code> để cập nhật giao diện</p>
+</li>
+</ol>
+<hr>
+<h3>Task 8: Xây dựng ResultScreen (View – phần 4)</h3>
+<p><strong>Mục tiêu</strong>: Hiện điểm và xếp loại sau khi làm xong.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo file <code>views/result_screen.py</code>.</li>
+<li>Tạo lớp <code>ResultScreen(Screen)</code>.</li>
+<li>Thêm:<ul>
+<li>Tiêu đề &quot;KẾT QUẢ&quot;</li>
+<li>Label: &quot;Bạn đúng X/Y&quot;</li>
+<li>Label: &quot;Xếp loại: ...&quot; (dựa trên điểm)</li>
+<li>Nút &quot;CHƠI LẠI&quot; → gọi <code>app.restart_quiz()</code></li>
+<li>Nút &quot;THOÁT&quot; → đóng app</li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li>Viết hàm <code>show_result(score, total)</code> để cập nhật kết quả trên màn hình</li>
+<li>Decision đơn giản với <code>if/elif/else</code> để xếp loại</li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Xếp loại theo phần trăm: &gt;= 80% = Xuất sắc, &gt;= 60% = Khá, &gt;= 40% = Trung bình</li>
+<li>Dùng <code>App.get_running_app().stop()</code> để thoát ứng dụng</li>
+<li>Có thể thêm emoji để màn hình sinh động hơn (🎉, 😊, 😢)</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file <code>views/result_screen.py</code></p>
+</li>
+<li><p>Import thư viện:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.app <span class="hljs-keyword">import</span> App
+<span class="hljs-keyword">from</span> kivy.uix.screenmanager <span class="hljs-keyword">import</span> Screen
+<span class="hljs-keyword">from</span> kivy.uix.boxlayout <span class="hljs-keyword">import</span> BoxLayout
+<span class="hljs-keyword">from</span> kivy.uix.label <span class="hljs-keyword">import</span> Label
+<span class="hljs-keyword">from</span> .widgets <span class="hljs-keyword">import</span> make_title, make_primary_button</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class với layout:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">ResultScreen</span>(<span class="hljs-title class_ inherited__">Screen</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, **kwargs</span>):
+        <span class="hljs-built_in">super</span>().__init__(**kwargs)
+        layout = BoxLayout(orientation=<span class="hljs-string">&quot;vertical&quot;</span>, padding=<span class="hljs-number">20</span>, spacing=<span class="hljs-number">15</span>)</code></pre>
+                </div>
+            </li>
+<li><p>Thêm tiêu đề:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">layout.add_widget(make_title(<span class="hljs-string">&quot;KẾT QUẢ&quot;</span>))</code></pre>
+                </div>
+            </li>
+<li><p>Tạo các label để hiển thị kết quả:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-variable language_">self</span>.score_label = Label(text=<span class="hljs-string">&quot;&quot;</span>, font_size=<span class="hljs-string">&quot;20sp&quot;</span>)
+<span class="hljs-variable language_">self</span>.rank_label = Label(text=<span class="hljs-string">&quot;&quot;</span>, font_size=<span class="hljs-string">&quot;18sp&quot;</span>)
+layout.add_widget(<span class="hljs-variable language_">self</span>.score_label)
+layout.add_widget(<span class="hljs-variable language_">self</span>.rank_label)</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>show_result(score, total)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">show_result</span>(<span class="hljs-params">self, score, total</span>):
+    <span class="hljs-variable language_">self</span>.score_label.text = <span class="hljs-string">f&quot;Bạn đúng <span class="hljs-subst">{score}</span>/<span class="hljs-subst">{total}</span> câu&quot;</span>
+    percent = (score / total) * <span class="hljs-number">100</span>
+    <span class="hljs-keyword">if</span> percent &gt;= <span class="hljs-number">80</span>:
+        rank = <span class="hljs-string">&quot;Xuất sắc 🎉&quot;</span>
+    <span class="hljs-keyword">elif</span> percent &gt;= <span class="hljs-number">60</span>:
+        rank = <span class="hljs-string">&quot;Khá 😊&quot;</span>
+    <span class="hljs-keyword">elif</span> percent &gt;= <span class="hljs-number">40</span>:
+        rank = <span class="hljs-string">&quot;Trung bình 👍&quot;</span>
+    <span class="hljs-keyword">else</span>:
+        rank = <span class="hljs-string">&quot;Cần cố gắng thêm 💪&quot;</span>
+    <span class="hljs-variable language_">self</span>.rank_label.text = <span class="hljs-string">f&quot;Xếp loại: <span class="hljs-subst">{rank}</span>&quot;</span></code></pre>
+                </div>
+            </li>
+<li><p>Thêm nút &quot;CHƠI LẠI&quot;:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_replay</span>(<span class="hljs-params">btn</span>):
+    app = App.get_running_app()
+    app.restart_quiz()
+layout.add_widget(make_primary_button(<span class="hljs-string">&quot;CHƠI LẠI&quot;</span>, on_replay))</code></pre>
+                </div>
+            </li>
+<li><p>Thêm nút &quot;THOÁT&quot;:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_exit</span>(<span class="hljs-params">btn</span>):
+    App.get_running_app().stop()
+layout.add_widget(make_primary_button(<span class="hljs-string">&quot;THOÁT&quot;</span>, on_exit))</code></pre>
+                </div>
+            </li>
+</ol>
+<hr>
+<h3>Task 9: Viết QuizController (Controller)</h3>
+<p><strong>Mục tiêu</strong>: Nối Model và View, điều khiển luồng làm bài.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Tạo thư mục <code>controllers/</code> (nếu chưa có).</li>
+<li>Tạo file <code>controllers/quiz_controller.py</code>.</li>
+<li>Tạo lớp <code>QuizController</code> với các thuộc tính:<ul>
+<li><code>self.model</code></li>
+<li><code>self.sm</code> (ScreenManager)</li>
+<li><code>self.quiz_screen</code>, <code>self.result_screen</code></li>
+</ul>
+</li>
+<li>Thêm các hàm:<ul>
+<li><code>start_quiz()</code> – gọi <code>model.reset()</code> rồi hiển thị câu đầu tiên.</li>
+<li><code>restart_quiz()</code> – gọi <code>start_quiz()</code> và chuyển sang màn &quot;quiz&quot;.</li>
+<li><code>check_answer(choice_index)</code> – gọi <code>model.check_answer(...)</code>.</li>
+<li><code>next_question()</code> – gọi <code>model.next_question()</code> và hiển thị lại.</li>
+<li><code>_show_current_question()</code> – nếu hết câu thì chuyển sang màn kết quả; nếu chưa thì gọi <code>quiz_screen.show_question(...)</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li>Truyền đối tượng (model, screen manager, screens) vào <code>__init__</code></li>
+<li>Gọi hàm giữa các đối tượng khác nhau</li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Controller là cầu nối, không chứa logic phức tạp</li>
+<li>Mỗi hàm trong Controller thường chỉ gọi 1-2 hàm từ Model hoặc View</li>
+<li>Dùng <code>self.sm.current = &quot;quiz&quot;</code> để chuyển màn hình</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo thư mục <code>controllers</code></p>
+</li>
+<li><p>Tạo file <code>controllers/quiz_controller.py</code></p>
+</li>
+<li><p>Tạo class với <code>__init__</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QuizController</span>:
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, model, screen_manager, quiz_screen, result_screen</span>):
+        <span class="hljs-variable language_">self</span>.model = model
+        <span class="hljs-variable language_">self</span>.sm = screen_manager
+        <span class="hljs-variable language_">self</span>.quiz_screen = quiz_screen
+        <span class="hljs-variable language_">self</span>.result_screen = result_screen</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>start_quiz()</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">start_quiz</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.model.reset()
+    <span class="hljs-variable language_">self</span>.sm.current = <span class="hljs-string">&quot;quiz&quot;</span>
+    <span class="hljs-variable language_">self</span>._show_current_question()</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>check_answer(choice_index)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_answer</span>(<span class="hljs-params">self, choice_index</span>):
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.model.check_answer(choice_index)</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>next_question()</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">next_question</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.model.next_question()
+    <span class="hljs-variable language_">self</span>._show_current_question()</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>_show_current_question()</code> - phần quan trọng:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_show_current_question</span>(<span class="hljs-params">self</span>):
+    question = <span class="hljs-variable language_">self</span>.model.get_current_question()
+    <span class="hljs-keyword">if</span> question <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:  <span class="hljs-comment"># Hết câu hỏi</span>
+        score, total = <span class="hljs-variable language_">self</span>.model.get_summary()
+        <span class="hljs-variable language_">self</span>.result_screen.show_result(score, total)
+        <span class="hljs-variable language_">self</span>.sm.current = <span class="hljs-string">&quot;result&quot;</span>
+    <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># Còn câu</span>
+        q_index = <span class="hljs-variable language_">self</span>.model.current_index + <span class="hljs-number">1</span>
+        total = <span class="hljs-built_in">len</span>(<span class="hljs-variable language_">self</span>.model.get_active_questions())
+        score = <span class="hljs-variable language_">self</span>.model.score
+        <span class="hljs-variable language_">self</span>.quiz_screen.show_question(question, q_index, total, score)</code></pre>
+                </div>
+            </li>
+<li><p>Viết hàm <code>restart_quiz()</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">restart_quiz</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.start_quiz()</code></pre>
+                </div>
+            </li>
+</ol>
+<hr>
+<h3>Task 10: Ghép tất cả trong main.py</h3>
+<p><strong>Mục tiêu</strong>: Tạo điểm khởi chạy chính của app.</p>
+<p><strong>Việc cần làm</strong>:</p>
+<ul>
+<li>Trong <code>main.py</code>:<ul>
+<li>Tạo <code>ScreenManager</code> với 3 màn hình: Start, Quiz, Result</li>
+<li>Tạo <code>QuizModel</code></li>
+<li>Tạo <code>QuizController</code> và truyền các màn hình vào</li>
+<li>Trong lớp <code>QuizApp</code>, viết các hàm:<ul>
+<li><code>start_quiz()</code> → gọi <code>controller.start_quiz()</code></li>
+<li><code>restart_quiz()</code> → gọi <code>controller.restart_quiz()</code></li>
+<li><code>check_answer()</code> → gọi <code>controller.check_answer()</code></li>
+<li><code>next_question()</code> → gọi <code>controller.next_question()</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li><code>ScreenManager</code>, <code>FadeTransition</code></li>
+<li>Cách khởi tạo nhiều Screen và đặt <code>name</code> cho từng màn hình</li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li><code>name</code> của mỗi Screen phải khớp với tên dùng trong <code>sm.current = &quot;...&quot;</code></li>
+<li><code>FadeTransition</code> tạo hiệu ứng mờ dần khi chuyển màn hình</li>
+<li><code>self.quiz_controller</code> nên được lưu trong App để các Screen gọi được</li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Tạo file <code>main.py</code> ở thư mục gốc</p>
+</li>
+<li><p>Import tất cả thành phần:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">from</span> kivy.app <span class="hljs-keyword">import</span> App
+<span class="hljs-keyword">from</span> kivy.uix.screenmanager <span class="hljs-keyword">import</span> ScreenManager, FadeTransition
+<span class="hljs-keyword">from</span> models.quiz_model <span class="hljs-keyword">import</span> QuizModel
+<span class="hljs-keyword">from</span> views.start_screen <span class="hljs-keyword">import</span> StartScreen
+<span class="hljs-keyword">from</span> views.quiz_screen <span class="hljs-keyword">import</span> QuizScreen
+<span class="hljs-keyword">from</span> views.result_screen <span class="hljs-keyword">import</span> ResultScreen
+<span class="hljs-keyword">from</span> controllers.quiz_controller <span class="hljs-keyword">import</span> QuizController</code></pre>
+                </div>
+            </li>
+<li><p>Tạo class <code>QuizApp(App)</code>:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">QuizApp</span>(<span class="hljs-title class_ inherited__">App</span>):
+    <span class="hljs-keyword">def</span> <span class="hljs-title function_">build</span>(<span class="hljs-params">self</span>):</code></pre>
+                </div>
+            </li>
+<li><p>Tạo ScreenManager:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">sm = ScreenManager(transition=FadeTransition())</code></pre>
+                </div>
+            </li>
+<li><p>Tạo 3 màn hình và thêm vào ScreenManager:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">start_screen = StartScreen(name=<span class="hljs-string">&quot;start&quot;</span>)
+quiz_screen = QuizScreen(name=<span class="hljs-string">&quot;quiz&quot;</span>)
+result_screen = ResultScreen(name=<span class="hljs-string">&quot;result&quot;</span>)
+sm.add_widget(start_screen)
+sm.add_widget(quiz_screen)
+sm.add_widget(result_screen)</code></pre>
+                </div>
+            </li>
+<li><p>Tạo Model và Controller:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">model = QuizModel(total_questions=<span class="hljs-number">5</span>)
+<span class="hljs-variable language_">self</span>.quiz_controller = QuizController(
+    model=model,
+    screen_manager=sm,
+    quiz_screen=quiz_screen,
+    result_screen=result_screen
+)</code></pre>
+                </div>
+            </li>
+<li><p>Viết các hàm wrapper để View gọi:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">start_quiz</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.quiz_controller.start_quiz()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">restart_quiz</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.quiz_controller.restart_quiz()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">check_answer</span>(<span class="hljs-params">self, choice_index</span>):
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.quiz_controller.check_answer(choice_index)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">next_question</span>(<span class="hljs-params">self</span>):
+    <span class="hljs-variable language_">self</span>.quiz_controller.next_question()</code></pre>
+                </div>
+            </li>
+<li><p>Return ScreenManager:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">return</span> sm</code></pre>
+                </div>
+            </li>
+<li><p>Thêm phần chạy app:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    QuizApp().run()</code></pre>
+                </div>
+            </li>
+<li><p>Chạy thử: <code>python main.py</code> và test đầy đủ tất cả tính năng!</p>
+</li>
+</ol>
+<hr>
+<h3>Task 11 (tuỳ chọn): Chỉnh màu sắc / giao diện</h3>
+<p><strong>Mục tiêu</strong>: Cho học sinh tự sáng tạo UI.</p>
+<p><strong>Ý tưởng</strong>:</p>
+<ul>
+<li>Cho học sinh tự chọn bảng màu (tươi sáng / tối / theo chủ đề).</li>
+<li>Thay đổi các hằng số màu trong <code>views/widgets.py</code>.</li>
+<li>Thử tăng/giảm <code>font_size</code>, <code>padding</code>, <code>spacing</code>.</li>
+</ul>
+<p><strong>Keyword / Kiến thức cần</strong>:</p>
+<ul>
+<li>Hệ màu RGBA trong Kivy: <code>(R, G, B, A)</code> với giá trị 0–1</li>
+<li>Thuộc tính <code>font_size</code>, <code>padding</code>, <code>spacing</code>, <code>size_hint</code></li>
+</ul>
+<p><strong>💡 Gợi ý</strong>:</p>
+<ul>
+<li>Dùng công cụ chọn màu online (Color Picker) để lấy mã màu RGB</li>
+<li>Chia giá trị RGB cho 255 để chuyển sang hệ 0-1 của Kivy</li>
+<li>Ví dụ: màu #3498db (52, 152, 219) → (0.2, 0.6, 0.86, 1)</li>
+<li>Có thể thêm hình nền bằng <code>canvas.before</code></li>
+</ul>
+<p><strong>📝 Các bước thực hiện</strong>:</p>
+<ol>
+<li><p>Mở file <code>views/widgets.py</code></p>
+</li>
+<li><p>Tìm phần định nghĩa màu (ví dụ):</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">PRIMARY_COLOR = (<span class="hljs-number">0.2</span>, <span class="hljs-number">0.6</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)
+SECONDARY_COLOR = (<span class="hljs-number">0.95</span>, <span class="hljs-number">0.95</span>, <span class="hljs-number">0.95</span>, <span class="hljs-number">1</span>)</code></pre>
+                </div>
+            </li>
+<li><p>Chọn bảng màu mới (ví dụ chủ đề tối):</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python">PRIMARY_COLOR = (<span class="hljs-number">0.1</span>, <span class="hljs-number">0.7</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Xanh lá mint</span>
+BACKGROUND_COLOR = (<span class="hljs-number">0.15</span>, <span class="hljs-number">0.15</span>, <span class="hljs-number">0.2</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Xám tối</span>
+TEXT_COLOR = (<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)  <span class="hljs-comment"># Trắng</span></code></pre>
+                </div>
+            </li>
+<li><p>Thay đổi kích thước chữ cho phù hợp:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-comment"># Trong make_title:</span>
+font_size=<span class="hljs-string">&quot;32sp&quot;</span>  <span class="hljs-comment"># Tăng từ 28sp</span></code></pre>
+                </div>
+            </li>
+<li><p>Điều chỉnh khoảng cách:</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="language">python</span>
+                        <button class="copy-button" onclick="copyToClipboard(this)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <pre><code class="hljs language-python"><span class="hljs-comment"># Trong các Screen:</span>
+padding=<span class="hljs-number">30</span>  <span class="hljs-comment"># Tăng từ 20</span>
+spacing=<span class="hljs-number">20</span>  <span class="hljs-comment"># Tăng từ 15</span></code></pre>
+                </div>
+            </li>
+<li><p>(Nâng cao) Thêm hình nền gradient hoặc hình ảnh</p>
+</li>
+<li><p>Chạy thử và điều chỉnh cho đẹp mắt</p>
+</li>
+<li><p>So sánh trước/sau và chia sẻ với lớp!</p>
+</li>
+</ol>
+<hr>
+<h2>4. Gợi ý cách giao bài / kiểm tra</h2>
+<ul>
+<li>Mỗi <strong>Task</strong> có thể là 1 buổi học hoặc 1 bài tập về nhà nhỏ.</li>
+<li>Giáo viên có thể yêu cầu:<ul>
+<li>Chụp màn hình kết quả chạy app ở từng bước.</li>
+<li>Nộp mã nguồn từng file sau mỗi task.</li>
+<li>Viết 3–5 câu mô tả lại: &quot;Hôm nay em học được gì?&quot;.</li>
+</ul>
+</li>
+</ul>
+<p>Nếu thầy/cô muốn, tôi có thể tạo thêm phiên bản <strong>worksheet</strong> (phiếu học tập) riêng cho từng Task để in ra cho học sinh điền.</p>
+
+</body>
+</html>
